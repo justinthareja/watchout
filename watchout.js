@@ -2,7 +2,7 @@
 var gameBoard = {
   height: 500,
   width: 500,
-  numEnemies: 20,
+  numEnemies: 2,
   backgroundColor: 'gray'
 };
 
@@ -150,9 +150,17 @@ var tick = function(){
   d3.selectAll('.enemy').data(newData)
     .transition()
     .duration(1500)
-    // .tween("attr", collide()) // *** not a real function!!
+    .tween("custom", testFactory)
     .attr('x', function(d){return d[0];})
     .attr('y', function(d){return d[1];})
+}
+
+var collisionDetection = function(newData) {
+  // capture starting x and y position
+  // capture ending x and y position
+  return function(t){
+    // uses x and y variables from closure to execute the collision math
+  }
 }
 
 var updateCurrentScore = function(){
@@ -161,7 +169,11 @@ var updateCurrentScore = function(){
 }
 
 var updateHighScore = function(){
-  d3.select('.high > span').text(scoreBoard.currentScore);
+  if (scoreBoard.currentScore > scoreBoard.highScore){
+    console.log('current score = ', scoreBoard.currentScore, 'high score = ', scoreBoard.highScore, "high score is greater than current score= ", scoreBoard.currentScore > scoreBoard.highScore)
+    scoreBoard.highScore = scoreBoard.currentScore;
+    d3.select('.high > span').text(scoreBoard.highScore);
+  }
   scoreBoard.currentScore = 0;
 }
 
@@ -169,6 +181,46 @@ var updateCollision = function(){
   scoreBoard.collisions ++;
   d3.select('.collisions > span').text(scoreBoard.collisions);
 }
+
+var testFactory = function(newData) {
+  // var i = d3.interpolateRound(0, 100);
+  var hasCollided = false;
+  var startPosX = parseFloat(d3.select(this).attr('x'));
+  var startPosY = parseFloat(d3.select(this).attr('y'));
+  var endPosY = newData[1];
+  var endPosX = newData[0];
+  return function(t) {
+    // this.textContent = i(t);
+    // console.log("startX = " + startPosX + ", startY = " + startPosY);
+    // console.log("endX = " + endPosX + ", endY = " + endPosY);
+    // console.log(newData);
+    var player = {
+      x: 200, y: 200, width: 100, height: 100
+    }
+    var enemy = {
+      x: startPosX + (endPosX - startPosX) * t,
+      y: startPosY + (endPosY - startPosY) * t,
+      width: 20,
+      height: 20
+    }
+
+    if (player.x < enemy.x + enemy.width &&
+       player.x + player.width > enemy.x &&
+       player.y < enemy.y + enemy.height &&
+       player.height + player.y > enemy.y && !hasCollided) {
+        // collision detected!
+        // console.log("collision!!!")
+        // console.log("Player on collision: " + player.x + " " + player.y);
+        // console.log("Enemy on collision: " + enemy.x + " " + enemy.y);
+        updateHighScore();
+        updateCollision();
+        hasCollided = true;
+        return;
+    }
+
+  }
+
+};
 
 
 
