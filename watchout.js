@@ -1,9 +1,8 @@
 // Game board options
 var gameBoard = {
-  height: 500,
-  width: 500,
-  numEnemies: 10,
-  backgroundColor: 'gray'
+  height: 900,
+  width: 900,
+  numEnemies: 20,
 };
 
 // Score board results
@@ -15,8 +14,8 @@ var scoreBoard = {
 
 // Enemy class
 var Enemy = function(x, y, id) {
-  this.height = '20px';
-  this.width = '20px';
+  this.height = '40px';
+  this.width = '40px';
   this.x = x;
   this.y = y;
   this.id = id;
@@ -24,8 +23,8 @@ var Enemy = function(x, y, id) {
 
 // Player class
 var Player = function(x, y) {
-  this.height = '30px';
-  this.width = '30px';
+  this.height = '50px';
+  this.width = '50px';
   this.x = x;
   this.y = y;
 }
@@ -36,13 +35,24 @@ var svg = d3.select('.container')
   .attr('height', gameBoard.height + 'px')
   .attr('width', gameBoard.width + 'px');
 
+// Create border around gameboard
+var borderPath = svg.append("rect")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("height", gameBoard.height)
+  .attr("width", gameBoard.width)
+  .style("stroke", 'blue') // i guess..
+  .style("fill", "none")
+  .style("stroke-width", '5px');
+
+
 
 
 // Generate player
 var player1 = new Player(250,250);
 d3.select('svg')
   .append('image')
-  .attr('xlink:href', './asteroid.png')
+  .attr('xlink:href', './img/justin.png')
   .attr('width', player1.width)
   .attr('height', player1.height)
   .attr('x', player1.x)
@@ -67,10 +77,12 @@ var generateEnemies = function(numEnemies) {
   var enemies = [];
   var posX;
   var posY;
+  var ID;
   for (var i =0; i<numEnemies; i++){
     posX = Math.random() * gameBoard.width;
     posY = Math.random() * gameBoard.height;
-    enemies.push(new Enemy(posX, posY, i))
+    ID = Math.floor(Math.random() * 3);
+    enemies.push(new Enemy(posX, posY, ID))
   }
   return enemies;
 }
@@ -81,7 +93,8 @@ var enemyData = generateEnemies(gameBoard.numEnemies);
 d3.select('svg').selectAll('image').data(enemyData)
   .enter()
   .append('image')
-  .attr('xlink:href', './asteroid.png')
+  // .attr('xlink:href', './asteroid.png')
+  .attr('xlink:href', function(d){ return "./img/" + d.id + ".png";})
   .attr('width', function(d){ return d.width;})
   .attr('height', function(d){ return d.height;})
   .attr('x', function(d){ return d.x;})
