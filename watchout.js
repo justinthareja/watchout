@@ -50,12 +50,14 @@ d3.select('svg')
   .attr('class', 'player');
 
 
+// Drag mechanics
+
 var dragmove = function(d) {
   d3.select(this)
     // .style("top", ((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
     // .style("left", ((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")
-    .attr("y", (d3.event.sourceEvent.pageY)-15)
-    .attr("x", (d3.event.sourceEvent.pageX)-15)
+    .attr("y", (d3.event.sourceEvent.pageY)-80)
+    .attr("x", (d3.event.sourceEvent.pageX)-30)
 }
 
 var drag = d3.behavior.drag().on("drag", dragmove);
@@ -63,6 +65,48 @@ var drag = d3.behavior.drag().on("drag", dragmove);
 d3.select(".player")
   .call(drag)
 
+
+// Collide mechanics
+
+// function collide(node){
+//     var trans = d3.transform(d3.select(node).attr("transform")).translate,
+//       x1 = trans[0],
+//       x2 = trans[0] + (+d3.select(node).attr("r")),
+//       y1 = trans[1],
+//       y2 = trans[1] + (+d3.select(node).attr("r"));
+
+//   var colliding = false;
+//   points.each(function(d,i){
+//     var ntrans = d3.transform(d3.select(this).attr("transform")).translate,
+//       nx1 = ntrans[0],
+//       nx2 = ntrans[0] + (+d3.select(this).attr("r")),
+//       ny1 = ntrans[1],
+//       ny2 = ntrans[1] + (+d3.select(this).attr("r"));
+
+
+//       if(!(x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1))
+//         colliding=true;
+//   })
+
+//   return colliding;
+// }
+
+// Tween function implementing collide
+// function translateAlong(path) {
+//   var l = path.getTotalLength();
+//   return function(d, i, a) {
+//     return function(t) {
+//       var p = path.getPointAtLength(t * l);
+
+//       d3.select(this).attr("transform","translate(" + p.x + "," + p.y + ")");
+
+//       if(collide(this))
+//         d3.select(this).style("fill", "red")
+//        else
+//         d3.select(this).style("fill", "steelblue")
+//     };
+//   };
+// }
 
 // Generate an array of enemies based on number of enemies defined in game board options
 var generateEnemies = function(numEnemies) {
@@ -102,15 +146,40 @@ var setPosition = function(numEnemies) {
 
 var tick = function(){
   var newData = setPosition(gameBoard.numEnemies);
+
   d3.selectAll('.enemy').data(newData)
     .transition()
     .duration(1500)
+    // .tween("attr", collide()) // *** not a real function!!
     .attr('x', function(d){return d[0];})
     .attr('y', function(d){return d[1];})
 }
 
 setInterval(tick, 1000);
 
+
+// function collide(node){
+//   var trans = d3.transform(d3.select(node).attr("transform")).translate,
+//     x1 = trans[0],
+//     x2 = trans[0] + (+d3.select(node).attr("r")),
+//     y1 = trans[1],
+//     y2 = trans[1] + (+d3.select(node).attr("r"));
+
+//   var colliding = false;
+//   points.each(function(d,i){
+//     var ntrans = d3.transform(d3.select(this).attr("transform")).translate,
+//       nx1 = ntrans[0],
+//       nx2 = ntrans[0] + (+d3.select(this).attr("r")),
+//       ny1 = ntrans[1],
+//       ny2 = ntrans[1] + (+d3.select(this).attr("r"));
+
+
+//       if(!(x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1))
+//         colliding=true;
+//   })
+
+//   return colliding;
+// }
 
 
 
