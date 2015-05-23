@@ -155,7 +155,28 @@ var tick = function(){
     .attr('y', function(d){return d[1];})
 }
 
+var updateCurrentScore = function(){
+  scoreBoard.currentScore ++;
+  d3.select('.current > span').text(scoreBoard.currentScore);
+}
+
+var updateHighScore = function(){
+  d3.select('.high > span').text(scoreBoard.currentScore);
+  scoreBoard.currentScore = 0;
+}
+
+var updateCollision = function(){
+  scoreBoard.collisions ++;
+  d3.select('.collisions > span').text(scoreBoard.collisions);
+}
+
+
+
+setInterval(updateCurrentScore, 100);
 setInterval(tick, 1000);
+
+
+
 
 
 // function collide(node){
