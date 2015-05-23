@@ -63,8 +63,32 @@ d3.select('svg')
 // Drag mechanics
 var dragmove = function(d) {
   d3.select(this)
-    .attr("y", (d3.event.sourceEvent.pageY)-80)
-    .attr("x", (d3.event.sourceEvent.pageX)-30)
+    // .attr("y", (d3.event.sourceEvent.pageY)-80)
+    // .attr("x", (d3.event.sourceEvent.pageX)-30)
+    .attr("y", function(d){
+      var mouseLoc = d3.event.sourceEvent.pageY;
+      if (mouseLoc < gameBoard.height && mouseLoc > 0){
+        return mouseLoc - 80;
+      }
+      else if (mouseLoc > gameBoard.height) {
+        return gameBoard.height - 55;
+      }
+      else if (mouseLoc < 0) {
+        return 5;
+      }
+    })
+    .attr("x", function (d) {
+      var mouseLoc = d3.event.sourceEvent.pageX;
+      if (mouseLoc < gameBoard.width && mouseLoc > 0) {
+        return mouseLoc - 30;
+      }
+      else if (mouseLoc > gameBoard.width) {
+        return gameBoard.width - 50;
+      }
+      else if (mouseLoc < 0) {
+        return 0;
+      }
+    })
 }
 
 var drag = d3.behavior.drag().on("drag", dragmove);
@@ -141,6 +165,7 @@ var updateCollision = function(){
 }
 
 var testFactory = function(newData) {
+
   var hasCollided = false;
   var startPosX = parseFloat(d3.select(this).attr('x'));
   var startPosY = parseFloat(d3.select(this).attr('y'));
