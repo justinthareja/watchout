@@ -176,6 +176,13 @@ var testFactory = function(newData) {
 
 };
 
+d3.select('#jammie').on('click', function() {
+  d3.select('.player').attr('xlink:href', './img/jammie.png');
+});
+
+d3.select('#justin').on('click', function() {
+  d3.select('.player').attr('xlink:href', './img/justin.png');
+});
 
 // Game Start - PLAY!!
 setInterval(updateCurrentScore, 100);
