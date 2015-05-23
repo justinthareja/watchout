@@ -2,7 +2,7 @@
 var gameBoard = {
   height: 500,
   width: 500,
-  numEnemies: 2,
+  numEnemies: 10,
   backgroundColor: 'gray'
 };
 
@@ -24,8 +24,8 @@ var Enemy = function(x, y, id) {
 
 // Player class
 var Player = function(x, y) {
-  this.height = '40px';
-  this.width = '40px';
+  this.height = '30px';
+  this.width = '30px';
   this.x = x;
   this.y = y;
 }
@@ -51,11 +51,8 @@ d3.select('svg')
 
 
 // Drag mechanics
-
 var dragmove = function(d) {
   d3.select(this)
-    // .style("top", ((d3.event.sourceEvent.pageY) - this.offsetHeight/2)+"px")
-    // .style("left", ((d3.event.sourceEvent.pageX) - this.offsetWidth/2)+"px")
     .attr("y", (d3.event.sourceEvent.pageY)-80)
     .attr("x", (d3.event.sourceEvent.pageX)-30)
 }
@@ -64,49 +61,6 @@ var drag = d3.behavior.drag().on("drag", dragmove);
 
 d3.select(".player")
   .call(drag)
-
-
-// Collide mechanics
-
-// function collide(node){
-//     var trans = d3.transform(d3.select(node).attr("transform")).translate,
-//       x1 = trans[0],
-//       x2 = trans[0] + (+d3.select(node).attr("r")),
-//       y1 = trans[1],
-//       y2 = trans[1] + (+d3.select(node).attr("r"));
-
-//   var colliding = false;
-//   points.each(function(d,i){
-//     var ntrans = d3.transform(d3.select(this).attr("transform")).translate,
-//       nx1 = ntrans[0],
-//       nx2 = ntrans[0] + (+d3.select(this).attr("r")),
-//       ny1 = ntrans[1],
-//       ny2 = ntrans[1] + (+d3.select(this).attr("r"));
-
-
-//       if(!(x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1))
-//         colliding=true;
-//   })
-
-//   return colliding;
-// }
-
-// Tween function implementing collide
-// function translateAlong(path) {
-//   var l = path.getTotalLength();
-//   return function(d, i, a) {
-//     return function(t) {
-//       var p = path.getPointAtLength(t * l);
-
-//       d3.select(this).attr("transform","translate(" + p.x + "," + p.y + ")");
-
-//       if(collide(this))
-//         d3.select(this).style("fill", "red")
-//        else
-//         d3.select(this).style("fill", "steelblue")
-//     };
-//   };
-// }
 
 // Generate an array of enemies based on number of enemies defined in game board options
 var generateEnemies = function(numEnemies) {
@@ -155,14 +109,6 @@ var tick = function(){
     .attr('y', function(d){return d[1];})
 }
 
-var collisionDetection = function(newData) {
-  // capture starting x and y position
-  // capture ending x and y position
-  return function(t){
-    // uses x and y variables from closure to execute the collision math
-  }
-}
-
 var updateCurrentScore = function(){
   scoreBoard.currentScore ++;
   d3.select('.current > span').text(scoreBoard.currentScore);
@@ -170,7 +116,6 @@ var updateCurrentScore = function(){
 
 var updateHighScore = function(){
   if (scoreBoard.currentScore > scoreBoard.highScore){
-    console.log('current score = ', scoreBoard.currentScore, 'high score = ', scoreBoard.highScore, "high score is greater than current score= ", scoreBoard.currentScore > scoreBoard.highScore)
     scoreBoard.highScore = scoreBoard.currentScore;
     d3.select('.high > span').text(scoreBoard.highScore);
   }
@@ -183,19 +128,18 @@ var updateCollision = function(){
 }
 
 var testFactory = function(newData) {
-  // var i = d3.interpolateRound(0, 100);
   var hasCollided = false;
   var startPosX = parseFloat(d3.select(this).attr('x'));
   var startPosY = parseFloat(d3.select(this).attr('y'));
   var endPosY = newData[1];
   var endPosX = newData[0];
+
   return function(t) {
-    // this.textContent = i(t);
-    // console.log("startX = " + startPosX + ", startY = " + startPosY);
-    // console.log("endX = " + endPosX + ", endY = " + endPosY);
-    // console.log(newData);
     var player = {
-      x: 200, y: 200, width: 100, height: 100
+      x: parseFloat(d3.select('.player').attr('x')),
+      y: parseFloat(d3.select('.player').attr('y')),
+      width: 30,
+      height: 30
     }
     var enemy = {
       x: startPosX + (endPosX - startPosX) * t,
@@ -203,15 +147,12 @@ var testFactory = function(newData) {
       width: 20,
       height: 20
     }
-
+    // console.log("X player ", player.x, " Y player", player.y);
     if (player.x < enemy.x + enemy.width &&
        player.x + player.width > enemy.x &&
        player.y < enemy.y + enemy.height &&
        player.height + player.y > enemy.y && !hasCollided) {
         // collision detected!
-        // console.log("collision!!!")
-        // console.log("Player on collision: " + player.x + " " + player.y);
-        // console.log("Enemy on collision: " + enemy.x + " " + enemy.y);
         updateHighScore();
         updateCollision();
         hasCollided = true;
@@ -223,36 +164,7 @@ var testFactory = function(newData) {
 };
 
 
-
+// Game Start - PLAY!!
 setInterval(updateCurrentScore, 100);
 setInterval(tick, 1000);
-
-
-
-
-
-// function collide(node){
-//   var trans = d3.transform(d3.select(node).attr("transform")).translate,
-//     x1 = trans[0],
-//     x2 = trans[0] + (+d3.select(node).attr("r")),
-//     y1 = trans[1],
-//     y2 = trans[1] + (+d3.select(node).attr("r"));
-
-//   var colliding = false;
-//   points.each(function(d,i){
-//     var ntrans = d3.transform(d3.select(this).attr("transform")).translate,
-//       nx1 = ntrans[0],
-//       nx2 = ntrans[0] + (+d3.select(this).attr("r")),
-//       ny1 = ntrans[1],
-//       ny2 = ntrans[1] + (+d3.select(this).attr("r"));
-
-
-//       if(!(x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1))
-//         colliding=true;
-//   })
-
-//   return colliding;
-// }
-
-
 
